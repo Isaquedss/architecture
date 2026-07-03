@@ -1,10 +1,13 @@
 package br.com.pet.adm.domain.event;
 
+import lombok.Getter;
+
 import java.util.Date;
 
 /**
  * Domain Event — banco foi inativado.
  */
+@Getter
 public class BankDeactivatedEvent {
 
     private final String cdBank;
@@ -19,8 +22,4 @@ public class BankDeactivatedEvent {
         this.occurredAt = new Date();
     }
 
-    public String getCdBank()     { return cdBank; }
-    public String getDsBank()     { return dsBank; }
-    public Long   getUserId()     { return userId; }
-    public Date   getOccurredAt() { return occurredAt; }
 }

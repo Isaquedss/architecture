@@ -1,6 +1,7 @@
 package br.com.pet.adm.domain.entity;
 
-import br.com.pet.adm.domain.valueobject.BankStatus;
+import br.com.pet.adm.domain.valueobject.StatusFlag;
+import lombok.Getter;
 
 import java.util.Date;
 import java.util.Objects;
@@ -10,11 +11,12 @@ import java.util.Objects;
  * Identidade definida pelo cdBank.
  * Contém regras de negócio do banco.
  */
+@Getter
 public class Bank {
 
     private final String     cdBank;          // identidade, nunca muda
     private String           dsBank;
-    private BankStatus       status;
+    private StatusFlag status;
     private final Date       creationDate;
     private Date             changeDate;
     private Date             inactivationDate;
@@ -24,13 +26,13 @@ public class Bank {
         validate(cdBank, dsBank);
         this.cdBank       = cdBank;
         this.dsBank       = dsBank;
-        this.status       = BankStatus.ACTIVE;  // regra: nasce ativo
+        this.status       = StatusFlag.ACTIVE;  // regra: nasce ativo
         this.creationDate = new Date();
         this.changeDate   = new Date();
     }
 
     // construtor para reconstituição (vindo do banco de dados)
-    public Bank(String cdBank, String dsBank, BankStatus status,
+    public Bank(String cdBank, String dsBank, StatusFlag status,
                 Date creationDate, Date changeDate, Date inactivationDate, Long userId) {
         this.cdBank           = cdBank;
         this.dsBank           = dsBank;
@@ -51,23 +53,23 @@ public class Bank {
     }
 
     public void deactivate() {
-        if (this.status == BankStatus.INACTIVE)
+        if (this.status == StatusFlag.INACTIVE)
             throw new IllegalStateException("Banco já está inativo");
-        this.status           = BankStatus.INACTIVE;
+        this.status           = StatusFlag.INACTIVE;
         this.inactivationDate = new Date();
         this.changeDate       = new Date();
     }
 
     public void reactivate() {
-        if (this.status == BankStatus.ACTIVE)
+        if (this.status == StatusFlag.ACTIVE)
             throw new IllegalStateException("Banco já está ativo");
-        this.status           = BankStatus.ACTIVE;
+        this.status           = StatusFlag.ACTIVE;
         this.inactivationDate = null;
         this.changeDate       = new Date();
     }
 
     public boolean isActive() {
-        return this.status == BankStatus.ACTIVE;
+        return this.status == StatusFlag.ACTIVE;
     }
 
     // --- identidade ---
@@ -90,13 +92,4 @@ public class Bank {
             throw new IllegalArgumentException("Nome é obrigatório");
     }
 
-    // --- getters ---
-
-    public String     getCdBank()           { return cdBank; }
-    public String     getDsBank()           { return dsBank; }
-    public BankStatus getStatus()           { return status; }
-    public Date       getCreationDate()     { return creationDate; }
-    public Date       getChangeDate()       { return changeDate; }
-    public Date       getInactivationDate() { return inactivationDate; }
-    public Long       getUserId()           { return userId; }
 }

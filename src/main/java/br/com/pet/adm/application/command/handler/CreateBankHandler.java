@@ -6,22 +6,19 @@ import br.com.pet.adm.application.port.output.BankWriteRepositoryPort;
 import br.com.pet.adm.application.port.output.EventPublisherPort;
 import br.com.pet.adm.domain.entity.Bank;
 import br.com.pet.adm.domain.event.BankCreatedEvent;
+import lombok.AllArgsConstructor;
+
 
 /**
  * Command Handler — processa criação de banco.
  * Implementa o Driving Port (CreateBankPort).
  * Depende apenas dos Driven Ports (interfaces).
  */
+@AllArgsConstructor
 public class CreateBankHandler implements CreateBankPort {
 
     private final BankWriteRepositoryPort writeRepository;
     private final EventPublisherPort      eventPublisher;
-
-    public CreateBankHandler(BankWriteRepositoryPort writeRepository,
-                             EventPublisherPort eventPublisher) {
-        this.writeRepository = writeRepository;
-        this.eventPublisher  = eventPublisher;
-    }
 
     @Override
     public String create(CreateBankCommand command) {

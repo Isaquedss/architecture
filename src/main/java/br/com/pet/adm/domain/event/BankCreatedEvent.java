@@ -1,10 +1,13 @@
 package br.com.pet.adm.domain.event;
 
+import lombok.Getter;
+
 import java.util.Date;
 
 /**
  * Domain Event — algo que aconteceu no domínio (passado, imutável).
  */
+@Getter
 public class BankCreatedEvent {
 
     private final String cdBank;
@@ -17,7 +20,4 @@ public class BankCreatedEvent {
         this.occurredAt = new Date();
     }
 
-    public String getCdBank()     { return cdBank; }
-    public String getDsBank()     { return dsBank; }
-    public Date   getOccurredAt() { return occurredAt; }
 }

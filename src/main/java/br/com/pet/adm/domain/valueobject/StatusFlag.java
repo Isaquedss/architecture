@@ -4,7 +4,7 @@ package br.com.pet.adm.domain.valueobject;
  * Value Object — definido pelo valor, imutável.
  * Substitui o Integer activeFlag espalhado pelo código.
  */
-public enum BankStatus {
+public enum StatusFlag {
 
     ACTIVE, INACTIVE;
 
@@ -12,7 +12,7 @@ public enum BankStatus {
         return this == ACTIVE;
     }
 
-    public static BankStatus from(Integer flag) {
+    public static StatusFlag from(Integer flag) {
         if (flag == null || flag == 0) return INACTIVE;
         return ACTIVE;
     }

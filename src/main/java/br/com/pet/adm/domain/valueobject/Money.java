@@ -8,10 +8,7 @@ import java.util.Objects;
  * Value Object rico — imutável, com comportamento.
  * Elimina erros de somar moedas diferentes.
  */
-public final class Money {
-
-    private final BigDecimal amount;
-    private final String     currency;
+public record Money(BigDecimal amount, String currency) {
 
     public Money(BigDecimal amount, String currency) {
         if (amount == null)
@@ -20,7 +17,7 @@ public final class Money {
             throw new IllegalArgumentException("Valor não pode ser negativo");
         if (currency == null || currency.isBlank())
             throw new IllegalArgumentException("Moeda é obrigatória");
-        this.amount   = amount.setScale(2, RoundingMode.HALF_UP);
+        this.amount = amount.setScale(2, RoundingMode.HALF_UP);
         this.currency = currency.toUpperCase();
     }
 
@@ -57,7 +54,7 @@ public final class Money {
     private void validateSameCurrency(Money other) {
         if (!this.currency.equals(other.currency))
             throw new IllegalArgumentException(
-                "Moedas diferentes: " + this.currency + " e " + other.currency);
+                    "Moedas diferentes: " + this.currency + " e " + other.currency);
     }
 
     @Override
@@ -68,15 +65,8 @@ public final class Money {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(amount, currency);
-    }
-
-    @Override
     public String toString() {
         return currency + " " + amount;
     }
 
-    public BigDecimal getAmount()   { return amount; }
-    public String     getCurrency() { return currency; }
 }

@@ -7,9 +7,7 @@ import br.com.pet.adm.domain.entity.OrderItem;
 import br.com.pet.adm.domain.valueobject.Money;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Mapper entre Order Aggregate e JPA Entities.
@@ -23,7 +21,7 @@ public class OrderPersistenceMapper {
                 .orderId(order.getOrderId())
                 .customerId(order.getCustomerId())
                 .status(order.getStatus().name())
-                .total(order.calculateTotal().getAmount())
+                .total(order.calculateTotal().amount())
                 .items(new ArrayList<>())
                 .build();
 
@@ -32,8 +30,8 @@ public class OrderPersistenceMapper {
                     .order(entity)
                     .productId(item.getProductId())
                     .quantity(item.getQuantity())
-                    .unitPrice(item.getUnitPrice().getAmount())
-                    .currency(item.getUnitPrice().getCurrency())
+                    .unitPrice(item.getUnitPrice().amount())
+                    .currency(item.getUnitPrice().currency())
                     .build();
             entity.getItems().add(itemEntity);
         }

@@ -28,9 +28,9 @@ public class BankReadAdapter implements BankReadRepositoryPort {
     public Page<BankResult> findAll(BankSearchCriteria criteria) {
         Specification<BankEntity> spec = buildSpec(criteria);
         PageRequest pageRequest = PageRequest.of(
-                criteria.getPage(),
-                criteria.getPageSize() == Integer.MAX_VALUE ? Integer.MAX_VALUE : criteria.getPageSize(),
-                buildSort(criteria.getOrderBy())
+                criteria.page(),
+                criteria.pageSize() == Integer.MAX_VALUE ? Integer.MAX_VALUE : criteria.pageSize(),
+                buildSort(criteria.orderBy())
         );
         return jpaRepository.findAll(spec, pageRequest).map(this::toResult);
     }
@@ -47,9 +47,9 @@ public class BankReadAdapter implements BankReadRepositoryPort {
 
     private Specification<BankEntity> buildSpec(BankSearchCriteria c) {
         return Specification
-                .where(like("cdBank", c.getCdBank()))
-                .and(like("dsBank", c.getDsBank()))
-                .and(equal("activeFlag", c.getActiveFlag()));
+                .where(like("cdBank", c.cdBank()))
+                .and(like("dsBank", c.dsBank()))
+                .and(equal("activeFlag", c.activeFlag()));
     }
 
     private Specification<BankEntity> like(String field, String value) {

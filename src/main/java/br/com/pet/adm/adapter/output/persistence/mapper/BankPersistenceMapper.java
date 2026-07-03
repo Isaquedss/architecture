@@ -2,7 +2,7 @@ package br.com.pet.adm.adapter.output.persistence.mapper;
 
 import br.com.pet.adm.adapter.output.persistence.entity.BankEntity;
 import br.com.pet.adm.domain.entity.Bank;
-import br.com.pet.adm.domain.valueobject.BankStatus;
+import br.com.pet.adm.domain.valueobject.StatusFlag;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -32,7 +32,7 @@ public class BankPersistenceMapper {
         return new Bank(
                 entity.getCdBank(),
                 entity.getDsBank(),
-                BankStatus.from(entity.getActiveFlag()),
+                StatusFlag.from(entity.getActiveFlag()),
                 entity.getCreationDate(),
                 entity.getChangeDate(),
                 entity.getInactivationDate(),
