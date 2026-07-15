@@ -1,0 +1,10 @@
+target/
+
+### .env file ###
+.env
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

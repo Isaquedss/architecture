@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: postgres-ai
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
