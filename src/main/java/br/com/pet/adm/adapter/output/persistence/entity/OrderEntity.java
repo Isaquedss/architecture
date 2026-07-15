@@ -11,7 +11,7 @@ import java.util.List;
  * JPA Entity para Order — existe apenas na Infra.
  */
 @Entity
-@Table(name = "TB_PEDIDO")
+@Table(name = "PEDIDO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

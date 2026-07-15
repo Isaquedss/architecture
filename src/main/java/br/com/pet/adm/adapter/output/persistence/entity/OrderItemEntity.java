@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * JPA Entity para OrderItem — existe apenas na Infra.
  */
 @Entity
-@Table(name = "TB_PEDIDO_ITEM")
+@Table(name = "ITEM_PEDIDO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -11,11 +11,11 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.util.Date;
 
 /**
- @INFO: Entidade JPA que representa a tabela TB_UF no banco de dados. O ID esta incorreto para padrões de PROJETOS PRODUTIVOS
+ @INFO: Entidade JPA que representa a tabela UF no banco de dados. O ID esta incorreto para padrões de PROJETOS PRODUTIVOS
  */
 
 @Entity
-@Table(name = "TB_UF")
+@Table(name = "UF")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

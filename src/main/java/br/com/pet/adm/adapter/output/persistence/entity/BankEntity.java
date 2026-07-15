@@ -10,7 +10,7 @@ import java.util.Date;
  * O Domain nunca vê essa classe.
  */
 @Entity
-@Table(name = "TB_BANCO")
+@Table(name = "BANCO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
