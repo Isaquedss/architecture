@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rag")
@@ -50,7 +51,18 @@ public class RagController {
     }
 
     @GetMapping("/ask")
-    public ResponseEntity<RagAnswer> ask(@RequestParam String question) {
-        return ResponseEntity.ok(askQuestionPort.ask(question));
+    public ResponseEntity<RagAnswer> ask(
+            @RequestParam String question,
+            @RequestParam(required = false) Map<String, String> allParams) {
+
+        Map<String, Object> filters = allParams.entrySet().stream()
+                .filter(e -> !e.getKey().equals("question"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        RagAnswer answer = filters.isEmpty()
+                ? askQuestionPort.ask(question)
+                : askQuestionPort.askWithFilter(question, filters);
+
+        return ResponseEntity.ok(answer);
     }
 }

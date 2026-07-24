@@ -8,4 +8,6 @@ public interface DocumentStorePort {
     void save(String content, Map<String, Object> metadata);
 
     List<String> findSimilar(String query, int topK);
+
+    List<String> findSimilarWithFilter(String query, int topK, Map<String, Object> filters);
 }

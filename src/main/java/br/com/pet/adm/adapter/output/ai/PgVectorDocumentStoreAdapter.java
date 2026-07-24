@@ -6,6 +6,7 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,32 @@ public class PgVectorDocumentStoreAdapter implements DocumentStorePort {
                 .similaritySearch(SearchRequest.builder()
                         .query(query)
                         .topK(topK)
+                        .build()
+                )
+                .stream()
+                .map(Document::getText)
+                .toList();
+    }
+
+    @Override
+    public List<String> findSimilarWithFilter(String query, int topK, Map<String, Object> filters) {
+        // Monta a expressão de filtro dinamicamente
+        var b = new FilterExpressionBuilder();
+        var expressions = filters.entrySet().stream()
+                .map(e -> b.eq(e.getKey(), e.getValue()))
+                .toList();
+
+        // Combina múltiplos filtros com AND
+
+        var filterExpression = expressions.size() == 1
+                ? expressions.get(0)
+                : expressions.stream().reduce(b::and).orElseThrow();
+
+        return vectorStore
+                .similaritySearch(SearchRequest.builder()
+                        .query(query)
+                        .topK(topK)
+                        .filterExpression(filterExpression.build())
                         .build()
                 )
                 .stream()

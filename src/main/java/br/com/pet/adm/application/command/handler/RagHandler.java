@@ -9,6 +9,7 @@ import br.com.pet.adm.domain.valueobject.RagAnswer;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 public class RagHandler implements IngestDocumentPort, AskQuestionPort {
@@ -33,6 +34,23 @@ public class RagHandler implements IngestDocumentPort, AskQuestionPort {
         return new RagAnswer(question, answer);
     }
 
+    @Override
+    public RagAnswer askWithFilter(String question, Map<String, Object> filters) {
+        List<String> context = filters == null || filters.isEmpty()
+                ? documentStore.findSimilar(question, 4)
+                : documentStore.findSimilarWithFilter(question, 4, filters);
+
+        return buildAnswer(question, context);
+    }
+
+    private RagAnswer buildAnswer(String question, List<String> contextChunks) {
+        if (contextChunks.isEmpty())
+            return new RagAnswer(question, "Não encontrei informações sobre isso.");
+
+        String answer = llm.complete(buildPrompt(question, contextChunks));
+        return new RagAnswer(question, answer);
+    }
+
     private String buildPrompt(String question, List<String> contextChunks) {
         String context = String.join("\n\n---\n\n", contextChunks);
         return """
@@ -45,4 +63,6 @@ public class RagHandler implements IngestDocumentPort, AskQuestionPort {
             Pergunta: %s
             """.formatted(context, question);
     }
+
+
 }
