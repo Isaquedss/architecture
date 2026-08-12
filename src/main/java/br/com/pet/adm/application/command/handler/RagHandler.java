@@ -6,6 +6,7 @@ import br.com.pet.adm.application.port.input.IngestDocumentPort;
 import br.com.pet.adm.application.port.input.LlmPort;
 import br.com.pet.adm.application.port.output.DocumentStorePort;
 import br.com.pet.adm.domain.valueobject.RagAnswer;
+import br.com.pet.adm.domain.valueobject.ScoredChunk;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -13,6 +14,13 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class RagHandler implements IngestDocumentPort, AskQuestionPort {
+
+    /**
+     * Threshold mínimo de similaridade para considerar um chunk relevante.
+     * Chunks com score abaixo disso são ignorados, evitando alucinações.
+     * Valor recomendado: 0.70 (70% de similaridade coseno).
+     */
+    private static final double RELEVANCE_THRESHOLD = 0.70;
 
     private final DocumentStorePort documentStore;
     private final LlmPort llm;
@@ -24,30 +32,34 @@ public class RagHandler implements IngestDocumentPort, AskQuestionPort {
 
     @Override
     public RagAnswer ask(String question) {
-        List<String> context = documentStore.findSimilar(question, 4);
-        // 2. Constrói o prompt com o contexto
-        String prompt = buildPrompt(question, context);
-
-        // 3. Chama o LLM via port (sem dependência direta do Spring AI)
-        String answer = llm.complete(prompt);
-
-        return new RagAnswer(question, answer);
+        List<ScoredChunk> scoredChunks = documentStore.findSimilarWithScore(question, 4);
+        return buildAnswerFromScored(question, scoredChunks);
     }
 
     @Override
     public RagAnswer askWithFilter(String question, Map<String, Object> filters) {
-        List<String> context = filters == null || filters.isEmpty()
-                ? documentStore.findSimilar(question, 4)
-                : documentStore.findSimilarWithFilter(question, 4, filters);
+        List<ScoredChunk> scoredChunks = filters == null || filters.isEmpty()
+                ? documentStore.findSimilarWithScore(question, 4)
+                : documentStore.findSimilarWithScoreAndFilter(question, 4, filters);
 
-        return buildAnswer(question, context);
+        return buildAnswerFromScored(question, scoredChunks);
     }
 
-    private RagAnswer buildAnswer(String question, List<String> contextChunks) {
-        if (contextChunks.isEmpty())
-            return new RagAnswer(question, "Não encontrei informações sobre isso.");
+    // ── privados ──────────────────────────────────────────────────────────
 
-        String answer = llm.complete(buildPrompt(question, contextChunks));
+    private RagAnswer buildAnswerFromScored(String question, List<ScoredChunk> scoredChunks) {
+        // Filtra apenas os chunks com score acima do threshold
+        List<String> relevantChunks = scoredChunks.stream()
+                .filter(chunk -> chunk.isRelevant(RELEVANCE_THRESHOLD))
+                .map(ScoredChunk::content)
+                .toList();
+
+        if (relevantChunks.isEmpty()) {
+            // Nenhum chunk passou pelo threshold — evita alucinação
+            return new RagAnswer(question, "Não encontrei informações relevantes sobre isso.");
+        }
+
+        String answer = llm.complete(buildPrompt(question, relevantChunks));
         return new RagAnswer(question, answer);
     }
 
@@ -63,6 +75,4 @@ public class RagHandler implements IngestDocumentPort, AskQuestionPort {
             Pergunta: %s
             """.formatted(context, question);
     }
-
-
 }

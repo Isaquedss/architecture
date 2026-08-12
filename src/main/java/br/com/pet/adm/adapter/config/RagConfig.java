@@ -3,7 +3,8 @@ package br.com.pet.adm.adapter.config;
 import br.com.pet.adm.adapter.output.ai.OllamaLlmAdapter;
 import br.com.pet.adm.adapter.output.ai.PgVectorDocumentStoreAdapter;
 import br.com.pet.adm.adapter.output.ai.TikaDocumentReaderAdapter;
-import br.com.pet.adm.adapter.output.conversation.InMemoryConversationRepositoryAdapter;
+import br.com.pet.adm.adapter.output.conversation.PostgresConversationRepositoryAdapter;
+import br.com.pet.adm.adapter.output.conversation.repository.ConversationJpaRepository;
 import br.com.pet.adm.adapter.output.knowledge.KnowledgeBaseJpaRepository;
 import br.com.pet.adm.adapter.output.knowledge.PostgresKnowledgeBaseRepositoryAdapter;
 import br.com.pet.adm.application.command.handler.ChatHandler;
@@ -59,8 +60,9 @@ public class RagConfig {
     // ── Chat com histórico ────────────────────────────────────────────────
 
     @Bean
-    public ConversationRepositoryPort conversationRepositoryPort() {
-        return new InMemoryConversationRepositoryAdapter();
+    public ConversationRepositoryPort conversationRepositoryPort(
+            ConversationJpaRepository jpaRepository) {
+        return new PostgresConversationRepositoryAdapter(jpaRepository);
     }
 
     @Bean
