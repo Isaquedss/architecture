@@ -1,9 +1,8 @@
 package br.com.pet.adm.adapter.input.ai.tools;
 
+import br.com.pet.adm.application.port.input.OrderQueryPort;
 import br.com.pet.adm.application.query.FindOrderByIdQuery;
 import br.com.pet.adm.application.query.FindOrdersByCustomerQuery;
-import br.com.pet.adm.application.query.handler.FindOrderByIdHandler;
-import br.com.pet.adm.application.query.handler.FindOrdersByCustomerHandler;
 import br.com.pet.adm.application.query.result.OrderDetailResult;
 import br.com.pet.adm.application.query.result.OrderSummaryResult;
 import org.slf4j.Logger;
@@ -21,13 +20,10 @@ public class OrderQueryTools {
     private static final Logger log = LoggerFactory.getLogger(OrderQueryTools.class);
     private static final int PAGE_SIZE = 5;
 
-    private final FindOrderByIdHandler findOrderByIdHandler;
-    private final FindOrdersByCustomerHandler findOrdersByCustomerHandler;
+    private final OrderQueryPort orderQueryPort;
 
-    public OrderQueryTools(FindOrderByIdHandler findOrderByIdHandler,
-                           FindOrdersByCustomerHandler findOrdersByCustomerHandler) {
-        this.findOrderByIdHandler = findOrderByIdHandler;
-        this.findOrdersByCustomerHandler = findOrdersByCustomerHandler;
+    public OrderQueryTools(OrderQueryPort orderQueryPort) {
+        this.orderQueryPort = orderQueryPort;
     }
 
     @Tool(description = "Consulta os detalhes de um pedido pelo seu ID. "
@@ -36,7 +32,7 @@ public class OrderQueryTools {
             @ToolParam(description = "ID do pedido") String orderId) {
 
         log.info("Tool call: buscarPedidoPorId(orderId={})", orderId);
-        return findOrderByIdHandler.handle(new FindOrderByIdQuery(orderId));
+        return orderQueryPort.findById(new FindOrderByIdQuery(orderId));
     }
 
     @Tool(description = "Lista os pedidos mais recentes de um cliente pelo ID do cliente. "
@@ -45,8 +41,8 @@ public class OrderQueryTools {
             @ToolParam(description = "ID do cliente") String customerId) {
 
         log.info("Tool call: buscarPedidosPorCliente(customerId={})", customerId);
-        return findOrdersByCustomerHandler
-                .handle(new FindOrdersByCustomerQuery(customerId, 0, PAGE_SIZE))
+        return orderQueryPort
+                .findByCustomer(new FindOrdersByCustomerQuery(customerId, 0, PAGE_SIZE))
                 .getContent();
     }
 }
