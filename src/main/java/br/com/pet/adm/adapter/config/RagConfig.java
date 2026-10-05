@@ -13,6 +13,7 @@ import br.com.pet.adm.application.command.handler.AgentChatHandler;
 import br.com.pet.adm.application.command.handler.ChatHandler;
 import br.com.pet.adm.application.query.handler.FindOrderByIdHandler;
 import br.com.pet.adm.application.query.handler.FindOrdersByCustomerHandler;
+import br.com.pet.adm.application.query.handler.OrderQueryHandler;
 import br.com.pet.adm.application.command.handler.KnowledgeBaseHandler;
 import br.com.pet.adm.application.command.handler.PdfIngestionHandler;
 import br.com.pet.adm.application.command.handler.RagHandler;
@@ -50,9 +51,14 @@ public class RagConfig {
     }
 
     @Bean
-    public OrderQueryTools orderQueryTools(FindOrderByIdHandler findOrderByIdHandler,
-                                           FindOrdersByCustomerHandler findOrdersByCustomerHandler) {
-        return new OrderQueryTools(findOrderByIdHandler, findOrdersByCustomerHandler);
+    public OrderQueryPort orderQueryPort(FindOrderByIdHandler findOrderByIdHandler,
+                                         FindOrdersByCustomerHandler findOrdersByCustomerHandler) {
+        return new OrderQueryHandler(findOrderByIdHandler, findOrdersByCustomerHandler);
+    }
+
+    @Bean
+    public OrderQueryTools orderQueryTools(OrderQueryPort orderQueryPort) {
+        return new OrderQueryTools(orderQueryPort);
     }
 
     @Bean
